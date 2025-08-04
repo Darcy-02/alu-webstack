@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Function to get subdomain information
+
+get_subdomain_info() {
+    local subdomain=$1
+    local domain=$2
+    local result=$(dig +short "$subdomain.$domain" A)
+
+    if [ -n "$result" ]; then
+        echo "The subdomain $subdomain is a A record and points to $result"
+    fi
+}
+
+# Check if the domain parameter is provided
+if [ -z "$1" ]; then
+    echo "Domain is mandatory."
+    exit 1
+fi
+
+domain=$1
+subdomain=$2
+
+# If no subdomain is provided, check for predefined subdomains
+if [ -z "$subdomain" ]; then
+    for sub in www lb-01 web-01 web-02; do
+        get_subdomain_info "$sub" "$domain"
+    done
+else
+    get_subdomain_info "$subdomain" "$domain"
+fi
